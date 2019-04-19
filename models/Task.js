@@ -9,12 +9,8 @@ const taskSchema=new Schema({
         },
         status :{
             type :String,
-            enum:['Initiation','Review','Allocation','Implementation','Completed'],
-            default:'Initiation'
-        },
-        approved:{
-            type: Boolean,
-            default:null
+            enum:['Allocation','Implementation','Completed'],
+            default:'Allocation'
         },
         description:{
             type:String,
@@ -26,18 +22,20 @@ const taskSchema=new Schema({
         },
         Payment_Type:{
             type:String,
+            enum:['Online','FaceToFace'],
             required:true
         },
         Consultancy_id:{ 
             type:String,
-            required:true
+            defualt:null
         },
         Partner_id:{ 
             type:String,
             required:true
         },
         project_id:{ 
-            type:String
+            type:String,
+            required:true
         },
         current_members_applied_ids:{
             type: [String],
@@ -83,6 +81,14 @@ const taskSchema=new Schema({
             type: String,
             required:true,
            
+        },
+        posted_on:{
+            type:Date,
+            defualt:new Date()
+        } ,
+        payment_currency:{
+            type:String,
+            required:true
         }  
         
     })   

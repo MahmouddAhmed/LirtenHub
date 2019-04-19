@@ -27,7 +27,7 @@ const ProjectSchema=new Schema({
         },
         Payment_Type:{
             type:String,
-            enum:['Online','FaceToFace','Other'],
+            enum:['Online','FaceToFace'],
             required:true
         },
         partner_id:{
@@ -65,7 +65,7 @@ const ProjectSchema=new Schema({
         },
         main_skill:{
             type:String,
-            required:true
+            defualt:null
         },
         extra_skills:{
             type:[String],
@@ -104,7 +104,15 @@ const ProjectSchema=new Schema({
         tasks :{ // if the project needed a consultancy
             type:[String],
             default:[]
-        }
+        },
+        posted_on:{
+            type:Date,
+            defualt:new Date()
+        },
+        payment_currency:{
+            type:String,
+            required:true
+        }  
         
     })   
 

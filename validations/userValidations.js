@@ -35,7 +35,6 @@ module.exports = {
             First_Name: Joi.string().min(3).max(20).required(),
             Last_Name: Joi.string().min(3).max(20).required(),
             Birth_Date: Joi.date().required(),
-            Experience_Level: Joi.string().min(3).max(30).required(),
             phone_number:Joi.number(),
             Password:Joi.string()
 

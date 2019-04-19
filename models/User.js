@@ -19,7 +19,7 @@ const UserSchema = new Schema ({
         default:false
    },
    Membership_expiration_date:{
-        type:String,
+        type:Date,
         default:null
    },
    Country:{
@@ -61,7 +61,8 @@ const UserSchema = new Schema ({
    },
    //Partner&Member&Consultancy
    Past_Projects:{
-       type:[String]
+       type:[String],
+       default:[]
    },
 
    //Partner&Member

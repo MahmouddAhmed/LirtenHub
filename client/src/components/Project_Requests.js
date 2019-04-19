@@ -8,7 +8,7 @@ class Project_Requests extends React.Component {
 
  
   componentDidMount() {
-    axios.get(`https://lirtenhub-na.herokuapp.com/api/Projects/approved/notyet`)
+    axios.get(`https://lirtenhubtest.herokuapp.com/api/Projects/approved/notyet`)
       .then(res => {
         const P = res.data.data;
         this.setState({Projects:P });

@@ -3,14 +3,16 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import 'tachyons'
 import axios from 'axios';
-
+import { Link,Route, BrowserRouter as Router ,Switch } from 'react-router-dom'
+import { connect } from "react-redux";
 class AddRoom extends Component{
   constructor(props) {
     super(props);
     this.state = {
       Roomname: '',
       capacity: '',
-      fee: ''
+      fee: '',
+      done: null
       
     }
     this.onChange = this.onChange.bind(this)
@@ -22,29 +24,33 @@ class AddRoom extends Component{
   }
   
   handleSubmitAddRoom(event) {
+    const {isLoggedIn,loggedUser,users} = this.props;
 
       event.preventDefault();
       const {locationID} = this.props.location.state
-console.log({locationID})
-      axios.post('https://lirtenhub-nav2.herokuapp.com/api/rooms/', {
+      console.log(loggedUser.id)
+      console.log({locationID})
+      axios.post('https://lirtenhubtest.herokuapp.com/api/rooms/', {
       
         Roomname: this.state.Roomname,
         capacity: this.state.capacity,
         fee: this.state.fee,
         LocationID: locationID,
-        OwnerId: '5cb1376f4627295b79e1a5d3'
+        OwnerId: loggedUser.id
 
       }).then(res => {
         this.setState({
           redirect: res.data
         })
+
         console.log(res.data)
       }).then(alert('Room Added Successfully '))
       
     }
     render(){
+      
         return(
-          <div>
+          <div id="page-content-wrapper">
           <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
           <title>Registration Form</title>
           <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.css" />
@@ -92,4 +98,11 @@ console.log({locationID})
     
 
 }
-export default AddRoom
+function mapStateToProps(state) {
+  // console.log(state.authentication.loggedUser)
+   
+   const { isLoggedIn,loggedUser } = state.authentication;
+  const {users} = state.users
+   return { isLoggedIn,loggedUser,users };
+ }
+export default connect(mapStateToProps)(AddRoom);

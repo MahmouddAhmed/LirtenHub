@@ -4,16 +4,17 @@ const router = express.Router();
 const mongoose = require('mongoose')
 const location= require('../../models/Location');
 const user  = require('../../models/User');
-
+const jwt = require('jsonwebtoken')
+const passport = require('passport')
 
 //Get all locations
-router.get('/', async (req,res) => {
+router.get('/', passport.authenticate('jwt', {session: false}),async (req,res) => {
     const locations = await location.find()
     res.json({data: locations})
 })
 
 // Get a certain location 
-router.get('/:id',async(req,res)=>{
+router.get('/:id',passport.authenticate('jwt', {session: false}),async(req,res)=>{
   const pid = req.params.id
 	const X =await location.findOne({"_id":pid})
 	if(!X)
@@ -23,9 +24,10 @@ router.get('/:id',async(req,res)=>{
 
 })
 //getting a location of a certain coworking space
-router.get('/CoWorkingLocation',async  (req, res) => {
+router.get('/CoWorkingLocation/all',passport.authenticate('jwt', {session: false}),async  (req, res) => {
   const locations= await location.find();
   // const usr = await user.findOne({id})
+  req.body.ownerID=""+req.user.id;
   const result=[]
   for(let i=0;i<locations.length;i++){
       if(((req.body.ownerID) == (locations[i]).ownerID))
@@ -34,7 +36,11 @@ router.get('/CoWorkingLocation',async  (req, res) => {
   res.json({ data: result})
 })
 // Create a location
-router.post('/', async (req,res) => {
+router.post('/', passport.authenticate('jwt', {session: false}),async (req,res) => {
+  if(req.user.User_Category!="Admin"&&req.user.User_Category!="Partner_CoWorkingSpace")
+  return res.status(401).send('Unauthorized');
+  req.body.ownerID=""+req.user.id;
+
   try {
     const newLocation = await location.create(req.body)
     const usr=await user.findOne({"_id":req.body.ownerID})
@@ -53,7 +59,11 @@ router.post('/', async (req,res) => {
 })
 
 // Update a location's details
-router.put('/:id', async (req,res) => {
+router.put('/:id', passport.authenticate('jwt', {session: false}),async (req,res) => {
+  if(req.user.User_Category!="Admin"&&req.user.User_Category!="Partner_CoWorkingSpace")
+  return res.status(401).send('Unauthorized');
+  req.body.ownerID=""+req.user.id;
+
   try {
    const id = req.params.id
    const locations = await location.findOne({"_id":id})
@@ -69,8 +79,12 @@ router.put('/:id', async (req,res) => {
 })
 
  // Delete a location
- router.delete('/:id', async (req,res) => {
-    try {
+ router.delete('/:id', passport.authenticate('jwt', {session: false}),async (req,res) => {
+  if(req.user.User_Category!="Admin"&&req.user.User_Category!="Partner_CoWorkingSpace")
+  return res.status(401).send('Unauthorized');  
+  req.body.ownerID=""+req.user.id;
+
+  try {
      const id = req.params.id
      const deletedlocation = await location.findByIdAndRemove(id)
      res.json({msg:'location was deleted successfully', data: deletedlocation})

@@ -2,6 +2,8 @@ import Parser from 'html-react-parser';
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import 'tachyons'
+import { Link,Route, BrowserRouter as Router ,Switch } from 'react-router-dom'
+import { connect } from "react-redux";
 import axios from 'axios';
 
 class AddLocation extends Component{
@@ -12,7 +14,8 @@ class AddLocation extends Component{
       country: '',
       city: '',
       street: '',
-      extraInfo: ''
+      extraInfo: '',
+      done:null
     }
     this.onChange = this.onChange.bind(this)
     this.handleSubmitAddLocation = this.handleSubmitAddLocation.bind(this)
@@ -22,28 +25,32 @@ class AddLocation extends Component{
     this.setState({ [e.target.name]: e.target.value })
   }
   handleSubmitAddLocation(event) {
+    const {isLoggedIn,loggedUser,users} = this.props;
 
       event.preventDefault();
-      axios.post(`https://lirtenhub-nav2.herokuapp.com/api/Locations/`, {
+      axios.post(`https://lirtenhubtest.herokuapp.com/api/Locations/`, {
       
         name: this.state.name,
         country: this.state.country,
         city: this.state.city,
         street: this.state.street,
-        ownerID: '5cb1376f4627295b79e1a5d3',
+        ownerID: loggedUser.id,
         extraInfo: this.state.extraInfo
 
       }).then(res => {
         this.setState({
           redirect: res.data
         })
+        this.setState({done:true})
+
         console.log(res.data)
       }).then(alert('A Location was Added '))
       
     }
     render(){
+     
         return(
-          <div>
+          <div id="page-content-wrapper">
           <link rel="shortcut icon" href=""/>
           <meta charset="UTF-8"/>
           <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -101,4 +108,11 @@ class AddLocation extends Component{
     
 
 }
-export default AddLocation
+function mapStateToProps(state) {
+  // console.log(state.authentication.loggedUser)
+   
+   const { isLoggedIn,loggedUser } = state.authentication;
+  const {users} = state.users
+   return { isLoggedIn,loggedUser,users };
+ }
+export default connect(mapStateToProps)(AddLocation);

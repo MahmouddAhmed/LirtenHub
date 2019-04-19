@@ -1,12 +1,42 @@
 h3:hover {
 
-    background-color:#E0FFFF;
+    background-color:#021b35;
 
   }
+  .tt:hover {
+    border-radius: 15px   ;
+    outline: 0px solid transparent;
+  padding: 1px 1px;
+  border: 2px solid green;
+}
 
 h3{
 
     text-align : center;
-    color: green;
+    color: #E0FFFF;
 
+}
+.tt  button{
+  width:100%;
+  padding:1em;
+  border:1px solid #021b35;
+  background:#021b35;
+  color:#fff;
+
+
+}
+.L {
+  text-decoration: none;
+}.loader {
+  border: 16px solid #f3f3f3; /* Light grey */
+  border-top: 16px solid #3498db; /* Blue */
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }

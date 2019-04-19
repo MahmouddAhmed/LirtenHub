@@ -7,13 +7,14 @@ module.exports = {
             description: Joi.string().min(30).max(300).required(),
             compensation: Joi.number().required(),
             Payment_Type: Joi.string().required(),
-            Consultancy_id: Joi.string().required(),
+            Consultancy_id: Joi.string(),
             Partner_id: Joi.string().required(),
             project_id: Joi.string().required(),
             main_skill: Joi.string().required(),
             Expected_Duration: Joi.string().required(),
-            least_exp_level_needed: Joi.string().min(10).max(30).required(),
-            comitment_level_needed: Joi.string().min(10).max(30).required()
+            least_exp_level_needed: Joi.string().min(5).max(30).required(),
+            comitment_level_needed: Joi.string().min(10).max(30).required(),
+            payment_currency:Joi.string().max(20).required()
         }
 
         return Joi.validate(request, createSchema)
@@ -30,8 +31,9 @@ module.exports = {
             project_id: Joi.string(),
             main_skill: Joi.string(),
             Expected_Duration: Joi.string(),
-            least_exp_level_needed: Joi.string().min(10).max(30),
-            comitment_level_needed: Joi.string().min(10).max(30) 
+            least_exp_level_needed: Joi.string().min(5).max(30),
+            comitment_level_needed: Joi.string().min(10).max(30),
+            payment_currency:Joi.string().max(20)
         }
 
         return Joi.validate(request, updateSchema)
@@ -57,7 +59,7 @@ module.exports = {
     },
     updateValidationstatus: request => {
         const updateSchema = {
-            status: Joi.string().valid('Initiation','Analysis','Negotiation ','Review','Allocation','Implementation','Completed').required()
+            status: Joi.string().valid('Allocation','Implementation','Completed').required()
         }
         return Joi.validate(request, updateSchema)
     },

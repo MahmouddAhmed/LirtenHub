@@ -1,15 +1,17 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken')
-// const passport = require('passport')
+const passport = require('passport')
 const validator = require('../../validations/userValidations');
 const router = express.Router();
 const User = require('../../models/User');
 const Skill = require('../../models/Skill');
 const tokenKey = require('../../config/keys').secretOrKey
+const Project = require('../../models/Project');
+const nodemailer = require('nodemailer');
 
 //All Users
-router.post('/login', async (req, res) => {
+router.post('/login',async (req, res) => {
 	try {
         
         const { Email, Password } = req.body;
@@ -18,16 +20,54 @@ router.post('/login', async (req, res) => {
 
 		const user = await User.findOne({'Email':Email });
         if (!user) 
-            return res.status(404).json({ error: 'Email does not exist' });
+			return res.status(404).json({ error: 'Email does not exist' });
+		// if(user.User_Category=="Admin"){
+		// 	if(user.Hashed_password==Password){
+
+		// 	const payload = {
+        //         id: user._id,
+		// 		User_Category:user.User_Category,
+		// 		Email:user.Email
+        //     }
+        //     const token = jwt.sign(payload, tokenKey, { expiresIn: '1h' })
+		// 	await user.updateOne({'Islogedin':true})
+			
+		// 	res.json({data: `Bearer ${token}`})}
+		// 	else return res.status(400).send({ error: 'Wrong password' });
+
+		// }
+		
+		if(user.Membership_expiration_date!=null){
+		const d=new Date()
+		const yd=user.Membership_expiration_date.getFullYear()-d.getFullYear()
+		const md=user.Membership_expiration_date.getMonth()-d.getMonth()
+		const dd=user.Membership_expiration_date.getDay()-d.getDay()
+		if(yd<0)
+			await user.updateOne({"Valid":false})
+		if(yd==0){
+			if(md<0){
+				await user.updateOne({"Valid":false})
+			}
+			if(md==0){
+				if(dd<=0){
+					await user.updateOne({"Valid":false})
+				}
+			}
+		}}
+		const k = await User.findOne({'Email':Email });
+		if(k.Valid==false)
+			return res.status(404).json({ error: 'Mebership Expired or account not verified yet' });
 		const match = bcrypt.compareSync(Password, user.Hashed_password);
+		
 		if (match) {
             const payload = {
                 id: user._id,
-                User_Category:user.User_Category
+				User_Category:user.User_Category,
+				Email:user.Email
             }
-            
-            const token = jwt.sign(payload, tokenKey, { expiresIn: '1h' })
-            await user.updateOne({'Islogedin':true})
+            const token = jwt.sign(payload, tokenKey, { expiresIn: '4h' })
+			await user.updateOne({'Islogedin':true})
+			
             res.json({data: `Bearer ${token}`})
             
            
@@ -70,6 +110,41 @@ router.post('/register', async (req, res) => {
 		const age=((new Date()).getFullYear())-(newUser.Birth_Date.getFullYear())
 		await newUser.updateOne({'Age':age})
 		const Z=await User.findOne({'_id':newUser._id})
+		
+		
+  
+    // create reusable transporter object using the default SMTP transport
+    let transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+          user: 'lirtenhubn.a@gmail.com', // generated ethereal user
+          pass: 'madolirten1234'  // generated ethereal password
+      },
+    
+    });
+  
+    // setup email data with unicode symbols
+    let mailOptions = {
+        from: 'LirtenHub@Lirten.com', // sender address
+        to: req.body.Email, // list of receivers
+        subject: 'Registration', // Subject line
+        text: 'Congrats you are now only one step away to Join LirtenHub  \n please join us at our HeadQuarters so you can sign the contract', // plain text body
+         // html body
+    };
+  
+    // send mail with defined transport object
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            console.log(error);
+        }
+        console.log('Message sent: %s', info.messageId);   
+        console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+  
+        
+    });
+     
+
+
 		res.json({ msg: 'User created successfully', data: Z });
 	} catch (error) {
 		console.log(error)
@@ -78,7 +153,7 @@ router.post('/register', async (req, res) => {
 });
 
 router.put('/validate/:id',async(req,res)=>{
-	const user=User.findOne({'_id':req.params.id})
+	const user=await User.findOne({'_id':req.params.id})
 	await user.updateOne({'Valid':true})
 	const z=new Date();
 	const newdate=new Date((z.getFullYear()+1),z.getMonth(),z.getDay())
@@ -90,14 +165,15 @@ router.put('/validate/:id',async(req,res)=>{
 	res.json({msg:'OK'})
 })
 
-router.get('/:id',async(req,res)=>{
-	const X=await User.findOne({'_id':req.params.id})
+router.get('/:id',passport.authenticate('jwt', {session: false}),async(req,res)=>{
+	const X=await User.findOne({'_id':req.params.id},{"Hashed_password":0})
 	if(!X)
 	return res.status(400).send({ error:'User Does Not exist'})
-	
+	if(X.Birth_Date!=null){
 	const age=((new Date()).getFullYear())-(X.Birth_Date.getFullYear())
 	await X.updateOne({'Age':age})
-	const newUser= await User.findOne({'_id':req.params.id})
+	}
+	const newUser= await User.findOne({'_id':req.params.id},{Hashed_password:0})
 	res.json({Data:newUser})
 })
 
@@ -106,6 +182,7 @@ router.get('/getbytype/:type',async(req,res)=>{
 	res.json({Data:X})
 	
 })
+
 router.delete('/:id',async(req,res)=>{
 	try{
 	const deletedU=await User.findByIdAndRemove(req.params.id)
@@ -123,13 +200,13 @@ if(type=='Member'){
 	isValidated = validator.updateValidationM(req.body)
 }
 else if(type=='Consulting_Agent'){
-	isValidated = validator.updateValidationM(req.body)
+	isValidated = validator.updateValidationCons(req.body)
 }
 else if(type=='Partner'){
-	isValidated = validator.updateValidationM(req.body)
+	isValidated = validator.updateValidationP(req.body)
 }
 else if(type=='Partner_CoWorkingSpace'){
-	isValidated = validator.updateValidationM(req.body)
+	isValidated = validator.updateValidationCOWS(req.body)
 }
 if (isValidated.error) 
 			return res.status(400).send({ error: isValidated.error.details[0].message });
@@ -186,14 +263,16 @@ router.post('/changepassword/:id',async(req,res)=>{
 })
 router.put('/Logout/:id',async(req)=>{
 	const X=await User.findOne({'_id':req.params.id})
+	console.log(X)
 	await X.updateOne({'Islogedin':false})
+	
 })
 //Member 
 router.put('/addinterest/:id', async (req, res) => {
 	const X = await User.findOne({"_id":req.params.id})
 	if(!X)
 		return res.status(404).send({error: 'User does not exist'})
-	const result=X.Interests
+	const result=X.Intrests
 	result.push(req.body.Interest)
 	await X.updateOne({'Intrests':result})
 	res.json({msg:'OK'})
@@ -338,8 +417,32 @@ router.delete('/Business_Plans_Offered/:id', async (req, res) => {
 			result.push(user.Business_Plans_Offered[i])
 	await user.updateOne({'Business_Plans_Offered':result})
 	res.json({msg:'OK'})
-});	
-				 
+});
+//Admin	
+router.get('/valid/notyet',passport.authenticate('jwt', {session: false}),async(req,res)=>{
+	if(req.user.User_Category!="Admin")
+		res.status(401).send("Unauthorized")
+	
+	const X=await User.find()
+	const result=[]
+	for(let i=0;i<X.length;i++)
+		if(X[i].Valid!=true)
+			result.push(X[i])	
+	
+	res.json({Data:result})
+})
+//Member-Partner-Consultancy
+router.get('/past/projects/:id',passport.authenticate('jwt', {session: false}),async(req,res)=>{
+	const user =await User.findOne({"_id":req.params.id})
+	const result=[]
+	for(let i=0;i<user.Past_Projects.length;i++){
+		const p=await Project.findOne({"_id":user.Past_Projects[i]})
+		result.push(p)
+	}
+	
+	
+	res.json({data:result})
+})			 
  
 	
 				

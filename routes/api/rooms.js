@@ -4,15 +4,16 @@ const router = express.Router();
 const mongoose = require('mongoose')
 const room= require('../../models/Room');
 const location= require('../../models/Location');
-
+const jwt = require('jsonwebtoken')
+const passport = require('passport')
 //Get all rooms
-router.get('/', async (req,res) => {
+router.get('/', passport.authenticate('jwt', {session: false}),async (req,res) => {
     const rooms = await room.find()
     res.json({data: rooms})
 })
 
 // Get a certain room 
-router.get('/:id',async(req,res)=>{
+router.get('/:id',passport.authenticate('jwt', {session: false}),async(req,res)=>{
     const pid = req.params.id
 	const X =await room.findOne({"_id":pid})
 	if(!X)
@@ -22,18 +23,20 @@ router.get('/:id',async(req,res)=>{
         
 
 //getting a locationRoom of a certain coworking space
-router.get('/CoWorkingRoom',async  (req, res) => {
-    const rooms= await Room.find();
+router.get('/CoWorkingRoom/cowork/loc',passport.authenticate('jwt', {session: false}),async  (req, res) => {
+    req.body.OwnerId=""+req.user.id;
+
+    const rooms= await Room.findOne({"OwnerId":req.body.OwnerId});
     // const usr = await user.findOne({id})
     const result=[]
     for(let i=0;i<rooms.length;i++){
-        if(((req.body.OwnerId) == (rooms[i]).OwnerId))
+        if(((req.body.OwnerId   +"") == (rooms[i]).OwnerId))
             result.push(rooms[i])
     }
     res.json({ data: result})
   })      
   //getting a locationRoom of a certain location
-router.get('/certainLocation',async  (req, res) => {
+router.get('/certainLocation/room',passport.authenticate('jwt', {session: false}),async  (req, res) => {
     const rooms= await Room.find();
     // const usr = await user.findOne({id})
     const result=[]
@@ -44,9 +47,13 @@ router.get('/certainLocation',async  (req, res) => {
     res.json({ data: result})
   })    
 // Create a room
-router.post('/', async (req,res) => {
+router.post('/', passport.authenticate('jwt', {session: false}),async (req,res) => {
+    if(req.user.User_Category!="Admin"&&req.user.User_Category!="Partner_CoWorkingSpace")
+    return res.status(401).send('Unauthorized');
     try {
         const X=await location.findById(req.body.LocationID)
+        if(req.user.id!=(""+X.ownerID))
+        return res.status(401).send('Unauthorized');
         const loc=await location.findOne({"_id":req.body.LocationID})
         const result=loc.locationRooms
        for(let i=0;i<X.locationRooms.length;i++){
@@ -77,12 +84,18 @@ router.post('/', async (req,res) => {
 	// }  
  })
 
- router.put('/:id', async (req,res) => {
+ router.put('/:id', passport.authenticate('jwt', {session: false}),async (req,res) => {
+    if(req.user.User_Category!="Admin"&&req.user.User_Category!="Partner_CoWorkingSpace")
+    return res.status(401).send('Unauthorized');
     try {
      const id = req.params.id
      const rooms = await room.findOne({"_id":id})
+     if(req.user.id!=(""+rooms.OwnerId))
+     return res.status(401).send('Unauthorized');
+     
      if(!rooms) return res.status(404).send({error: 'Room does not exist'})
-     const updatedRoom = await room.updateOne(req.body)
+     
+     const updatedRoom = await rooms.updateOne(req.body)
      res.json({msg: 'Room updated successfully',data: updatedRoom})
     }
     catch(error) {
@@ -91,10 +104,14 @@ router.post('/', async (req,res) => {
     }  
  })
 // Delete a room
-router.delete('/:id', async (req,res) => {
+router.delete('/:id', passport.authenticate('jwt', {session: false}),async (req,res) => {
+    if(req.user.User_Category!="Admin"&&req.user.User_Category!="Partner_CoWorkingSpace")
+    return res.status(401).send('Unauthorized');
     try {
      const id = req.params.id
      const allrooms = await room.findById(id)
+     if(req.user.id!=(""+allrooms.OwnerId))
+     return res.status(401).send('Unauthorized');
      const deletedroom = await room.findByIdAndRemove(id)
      const loc=await location.findOne({"_id":req.body.LocationID})
      const result=loc.locationRooms
