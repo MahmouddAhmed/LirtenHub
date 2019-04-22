@@ -28,6 +28,9 @@ import HomePage from './components/pages/HomePage'
 import Changepw from './components/pages/Changepw';
 import CoworkingLocations from './components/CoworkingLocations';
 import LandingPage from './components/layout/LandingPage';
+import AddProject from './components/pages/AddProject';
+import EditProject from './components/pages/EditProject';
+import EditProj from './components/EditProj';
 //gowaha sign in w de hat7awelny 3ala app.js
 // sign up w de hat7awelny 3ala form
 
@@ -76,6 +79,9 @@ class App extends React.Component {
           <Route   exact path="/Profile/:id" component={Profile}/>
           <Route   exact path="/Edit/:id" component={Edit}/>
           <Route   exact path="/Changepw/:id" component={Changepw}/>
+          <Route   exact path="/AddProject" component={AddProject}/>
+          <Route   exact path="/EditProject" component={EditProj}/>
+          <Route   exact path="/EditProject/:id" component={EditProject}/>
           </Switch>
           </X>
           </Router>

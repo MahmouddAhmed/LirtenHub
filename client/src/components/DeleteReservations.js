@@ -35,7 +35,7 @@ class Delete extends Component{
   routeChangeDelete(event) {
     event.preventDefault();
     console.log(this.state.Y)
-    axios.delete(`https://lirtenhubtest.herokuapp.com/api/reservations/cancelReservation/`+this.state.Y,{
+    axios.delete(`https://lirtenhub-nav2.herokuapp.com/api/reservations/cancelReservation/`+this.state.Y,{
 
     }).then(res => {
       this.setState({

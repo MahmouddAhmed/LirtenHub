@@ -33,7 +33,7 @@ class Cards extends Component{
     event.preventDefault();
   
     console.log(this.state.Y)
-    axios.put(`https://lirtenhubtest.herokuapp.com/api/reservations/declined/`+this.state.Y,{
+    axios.put(`https://lirtenhub-nav2.herokuapp.com/api/reservations/declined/`+this.state.Y,{
 
     }).then(res => {
       this.setState({
@@ -62,7 +62,7 @@ class Cards extends Component{
   routeChangeAccept(event) {
     event.preventDefault();
     console.log(this.state.Y)
-    axios.put(`https://lirtenhubtest.herokuapp.com/api/reservations/confirmed/`+this.state.Y,{
+    axios.put(`https://lirtenhub-nav2.herokuapp.com/api/reservations/confirmed/`+this.state.Y,{
 
     }).then(res => {
       this.setState({

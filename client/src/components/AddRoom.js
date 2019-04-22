@@ -30,7 +30,7 @@ class AddRoom extends Component{
       const {locationID} = this.props.location.state
       console.log(loggedUser.id)
       console.log({locationID})
-      axios.post('https://lirtenhubtest.herokuapp.com/api/rooms/', {
+      axios.post('https://lirtenhub-nav2.herokuapp.com/api/rooms/', {
       
         Roomname: this.state.Roomname,
         capacity: this.state.capacity,

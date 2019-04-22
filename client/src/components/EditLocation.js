@@ -30,7 +30,7 @@ class EditLocation extends Component{
     const {locationID} = this.props.location.state
     console.log({locationID})
       event.preventDefault();
-      axios.put(`https://lirtenhubtest.herokuapp.com/api/Locations/`+locationID, {
+      axios.put(`https://lirtenhub-nav2.herokuapp.com/api/Locations/`+locationID, {
       
         name: this.state.name,
         country: this.state.country,

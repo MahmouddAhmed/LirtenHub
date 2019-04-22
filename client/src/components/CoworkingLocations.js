@@ -12,7 +12,7 @@ class CoworkingLocations extends React.Component {
   }
   componentDidMount() {
     const {isLoggedIn,loggedUser,users} = this.props;
-    axios.get(`https://lirtenhubtest.herokuapp.com/api/Locations/CoWorkingLocation/all`)
+    axios.get(`https://lirtenhub-nav2.herokuapp.com/api/Locations/CoWorkingLocation/all`)
       .then(res => {
         const L = res.data.data;
         this.setState({locations:L });

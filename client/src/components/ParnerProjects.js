@@ -1,5 +1,5 @@
 import React from 'react';
-import Project from './pages/Project.js'
+import Project from './EditProj'
 import EditProj from './EditProj'
 import axios from 'axios';
 import { connect } from "react-redux";
@@ -11,7 +11,7 @@ function mapStateToProps(state) {
   return { isLoggedIn,loggedUser,users };
 }
 
-class All_Projects extends React.Component {
+class PartnerProject extends React.Component {
   state={
     Projects:[]
   }
@@ -41,4 +41,4 @@ class All_Projects extends React.Component {
   }
 }
 
-export default connect(mapStateToProps)( All_Projects);
+export default connect(mapStateToProps)( PartnerProject);

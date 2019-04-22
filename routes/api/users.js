@@ -78,6 +78,10 @@ router.post('/login',async (req, res) => {
         
     }
 });
+router.get('/', passport.authenticate('jwt', {session: false}),async (req,res) => {
+    const locations = await User.find()
+    res.json({data: locations})
+})
 
 router.post('/register', async (req, res) => {
 	try {

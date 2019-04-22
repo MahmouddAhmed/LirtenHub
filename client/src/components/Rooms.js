@@ -10,7 +10,7 @@ class Rooms extends React.Component {
     error: null
   }
   componentDidMount() {
-    axios.get(`https://lirtenhubtest.herokuapp.com/api/rooms/CoWorkingRoom/cowork/loc`)//will be accepted after pushing to heroku 
+    axios.get(`https://lirtenhub-nav2.herokuapp.com/api/rooms/CoWorkingRoom/cowork/loc`)//will be accepted after pushing to heroku 
       .then(res => {
         const R = res.data.data;
         this.setState({rooms:R });

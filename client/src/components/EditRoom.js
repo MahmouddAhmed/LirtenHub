@@ -31,7 +31,7 @@ class EditRoom extends Component{
       event.preventDefault();
       const {RoomID} = this.props.location.state
 console.log({RoomID})
-      axios.put('https://lirtenhubtest.herokuapp.com/api/rooms/'+RoomID, {
+      axios.put('https://lirtenhub-nav2.herokuapp.com/api/rooms/'+RoomID, {
       
         Roomname: this.state.Roomname,
         capacity: this.state.capacity,

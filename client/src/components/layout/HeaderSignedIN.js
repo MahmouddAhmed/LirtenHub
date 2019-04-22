@@ -29,13 +29,13 @@ class HeaderSignedIN extends Component{
       const { dispatch } = this.props;
       const x = this.props.loggedUser
       console.log(this.props.loggedUser)
-      if(x.User_Category=="Admin"){
+      // if(x.User_Category=="Admin"){
 
-      }
-      else if(x.User_Category=="Partner"){}
-      else if(x.User_Category=="Member"){}
-      else if(x.User_Category=="Consulting_Agent"){}
-      else{
+      // }
+      // else if(x.User_Category=="Partner"){}
+      // else if(x.User_Category=="Member"){}
+      // else if(x.User_Category=="Consulting_Agent"){}
+      // else{
 
 return(
     <div>
@@ -59,6 +59,8 @@ return(
       <Link className="list-group-item list-group-item-action white-80 bg-light" to="/LocationRoom">Add Room</Link>
       <Link className="list-group-item list-group-item-action white-80 bg-light" to="/Rooms">Edit Room</Link>
       <Link className="list-group-item list-group-item-action white-80 bg-light" to="/Calendar">Calendar</Link>
+      <Link className="list-group-item list-group-item-action white-80 bg-light" to="/AddProject">AddProject</Link>
+      <Link className="list-group-item list-group-item-action white-80 bg-light" to="/EditProject">EditProject</Link>
 
       </div>
     </div>
@@ -115,7 +117,7 @@ return(
 )
       }
 }
-}
+//}
 
 function mapStateToProps(state) {
   console.log(state.authentication.loggedUser)

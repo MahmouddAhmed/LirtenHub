@@ -23,8 +23,8 @@ class Landing extends Component{
 
             <div class="content">
             <h1> Welcome to LirtenHub...</h1>
-            <h1> Create Your Future</h1>
-            <Link id="myBtn" to="/SignIn">Get Started</Link>
+            <h1> Want To Create Your Future !!</h1>
+            <Link id="myBtn" to="/SignIn">Let's Get Started</Link>
             </div>
             </body>
         
